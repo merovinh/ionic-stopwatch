@@ -29,8 +29,8 @@
       </ion-header-bar>
       
       <ion-content>
-        
-        <stop-watch></stop-watch>
+        <p>{{newLap}}</p>
+        <stop-watch lap-attr="newLap"></stop-watch>
         <ion-list>
           <ion-item ng-repeat="lap in laps" class="item item-icon-right animated">
             <label class="item-icon-right">{{ lap.millisecond | date:'mm:ss.sss'}}</label>
@@ -53,8 +53,9 @@
     <div class="item item-divider">
       <div class="button-bar">
         <a class="button icon-left ion-arrow-right-b button-clear button-dark" ng-click="swctrl.start()">Play</a>
-        <a class="button icon-left ion-android-stopwatch button-clear button-dark" ng-click="swctrl.stop()"></a>
+        <a class="button icon-left ion-ios-close button-clear button-dark" ng-click="swctrl.stop()">Stop</a>
         <a class="button icon-left ion-ios-refresh-outline button-clear button-dark" ng-click="swctrl.reset()"></a>
+        <a class="button icon-left ion-android-stopwatch button-clear button-dark" ng-click="swctrl.lap()"></a>
       </div>
     </div>
   </div>

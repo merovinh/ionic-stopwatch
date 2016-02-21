@@ -30,11 +30,15 @@ angular.module('Stopwatch', ['ionic'])
     updateStorage();
   }
   
-  $scope.$watch('laps', function() { updateStorage() }, true);
+  $scope.newLap = "lap";
+
+    $scope.$watch('newLap', function() {
+        console.log("watch works");
+    },true);
+    
+  //$scope.$watch(attrs.newLap, function(value) { console.log("add new lap "+value) }, true);
   
-  $scope.play = function() {
-    console.log("Start time playing");
-  }
+  $scope.$watch('laps', function() { updateStorage() }, true);
   
   $scope.removeLap = function(id) {
     $scope.laps.splice(id, 1);
@@ -52,24 +56,32 @@ angular.module('Stopwatch', ['ionic'])
     restrict: 'E',
     replace: false,
     templateUrl: 'StopWatch',
-    scope: {},
-    link: function(scope, element, attrs, ctrl) {},
+    scope: {
+      lapAttr: "="
+    },
+    link: function($scope, element, attrs, ctrl) {},
     controllerAs: 'swctrl',
     controller: function($scope, $interval) {
       var self = this;
       var _var = window.localStorage;
-      var totalElapsedMs = 0;
+      var totalElapsedMs = _var.totalElapsedMs ? parseInt(_var.totalElapsedMs) : 0;
       var elapsedMs = 0;
-      _var.startTime;
-      _var.timerPromise;
-      var timerPromise = _var.timerPromise ? JSON.parse(_var.timerPromise) : undefined;
+      var timerPromise = _var.timerPromise ? JSON.parse(_var.timerPromise) : "";
+      
+      // start from reload
+      if ( timerPromise ) {
+        timerPromise = $interval(function() {
+          var now = new Date();
+          elapsedMs = now.getTime() - new Date(_var.startTime).getTime();
+        }, 31);
+        _var.timerPromise = JSON.stringify(timerPromise);
+      }
       
       self.start = function() {
         if (!timerPromise) {
           _var.startTime = new Date();
           timerPromise = $interval(function() {
             var now = new Date();
-            //$scope.time = now;
             elapsedMs = now.getTime() - new Date(_var.startTime).getTime();
           }, 31);
           _var.timerPromise = JSON.stringify(timerPromise);
@@ -79,15 +91,21 @@ angular.module('Stopwatch', ['ionic'])
       self.stop = function() {
         if (timerPromise) {
           $interval.cancel(timerPromise);
-          _var.timerPromise = timerPromise = undefined;
-          totalElapsedMs += elapsedMs;
+          _var.timerPromise = timerPromise = "";
+          totalElapsedMs = _var.totalElapsedMs = totalElapsedMs + elapsedMs;
           elapsedMs = 0;
         }
       };
       
+      self.lap = function() {
+        console.log(dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8));
+        $scope.lapAttr = dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8);
+      }
+      
       self.reset = function() {
          _var.startTime = new Date();
         totalElapsedMs = elapsedMs = 0;
+        _var.totalElapsedMs = "";
       };
       
       self.getElapsedMs = function() {
