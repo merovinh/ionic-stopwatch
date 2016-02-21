@@ -57,33 +57,36 @@ angular.module('Stopwatch', ['ionic'])
     controllerAs: 'swctrl',
     controller: function($scope, $interval) {
       var self = this;
+      var _var = window.localStorage;
       var totalElapsedMs = 0;
       var elapsedMs = 0;
-      var startTime;
-      var timerPromise;
+      _var.startTime;
+      _var.timerPromise;
+      var timerPromise = _var.timerPromise ? JSON.parse(_var.timerPromise) : undefined;
       
       self.start = function() {
         if (!timerPromise) {
-          startTime = new Date();
+          _var.startTime = new Date();
           timerPromise = $interval(function() {
             var now = new Date();
             //$scope.time = now;
-            elapsedMs = now.getTime() - startTime.getTime();
+            elapsedMs = now.getTime() - new Date(_var.startTime).getTime();
           }, 31);
+          _var.timerPromise = JSON.stringify(timerPromise);
         }
       };
       
       self.stop = function() {
         if (timerPromise) {
           $interval.cancel(timerPromise);
-          timerPromise = undefined;
+          _var.timerPromise = timerPromise = undefined;
           totalElapsedMs += elapsedMs;
           elapsedMs = 0;
         }
       };
       
       self.reset = function() {
-        startTime = new Date();
+         _var.startTime = new Date();
         totalElapsedMs = elapsedMs = 0;
       };
       
