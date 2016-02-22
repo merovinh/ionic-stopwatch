@@ -18,101 +18,81 @@ angular.module('Stopwatch', ['ionic'])
   });
 })
 
-.controller("StopwatchCtrl", function( $scope ) {
-  
-  if( !angular.isUndefined( window.localStorage['laps'] ) ) {
-    $scope.laps = JSON.parse( window.localStorage['laps'] );
-  } else {
-    $scope.laps = [
-      { millisecond: '15230', description: 'first player' },
-      { millisecond: '25330', description: 'second player' }
-    ];
-    updateStorage();
-  }
-  
-  $scope.newLap = "lap";
-
-    $scope.$watch('newLap', function() {
-        console.log("watch works");
-    },true);
-    
-  //$scope.$watch(attrs.newLap, function(value) { console.log("add new lap "+value) }, true);
-  
-  $scope.$watch('laps', function() { updateStorage() }, true);
-  
-  $scope.removeLap = function(id) {
-    $scope.laps.splice(id, 1);
-    updateStorage();
-  }
-  
-  function updateStorage() {
-    window.localStorage['laps'] = angular.toJson( $scope.laps );
-  }
-  
-})
-
 .directive('stopWatch', function(dateFilter, $interval) {
   return {
     restrict: 'E',
     replace: false,
     templateUrl: 'StopWatch',
-    scope: {
-      lapAttr: "="
-    },
-    link: function($scope, element, attrs, ctrl) {},
+    scope: {},
     controllerAs: 'swctrl',
     controller: function($scope, $interval) {
-      var self = this;
-      var _var = window.localStorage;
-      var totalElapsedMs = _var.totalElapsedMs ? parseInt(_var.totalElapsedMs) : 0;
-      var elapsedMs = 0;
-      var timerPromise = _var.timerPromise ? JSON.parse(_var.timerPromise) : "";
+      var self = this,
+        _var = window.localStorage,
+        totalElapsedMs = _var.totalElapsedMs ? parseInt(_var.totalElapsedMs) : 0,
+        elapsedMs = 0;
+      $scope.timerPromise = _var.timerPromise ? JSON.parse(_var.timerPromise) : "";
+      
+      $scope.laps = window.localStorage['laps'] ? JSON.parse( window.localStorage['laps'] ) : [];
+
+      $scope.$watch('laps', function() { updateStorage() }, true);
       
       // start from reload
-      if ( timerPromise ) {
-        timerPromise = $interval(function() {
+      if ( $scope.timerPromise ) {
+        $scope.timerPromise = $interval(function() {
           var now = new Date();
           elapsedMs = now.getTime() - new Date(_var.startTime).getTime();
-        }, 31);
-        _var.timerPromise = JSON.stringify(timerPromise);
+        }, 10);
+        _var.timerPromise = JSON.stringify($scope.timerPromise);
       }
       
       self.start = function() {
-        if (!timerPromise) {
+        if (!$scope.timerPromise) {
           _var.startTime = new Date();
-          timerPromise = $interval(function() {
+          $scope.timerPromise = $interval(function() {
             var now = new Date();
             elapsedMs = now.getTime() - new Date(_var.startTime).getTime();
-          }, 31);
-          _var.timerPromise = JSON.stringify(timerPromise);
+          }, 10);
+          _var.timerPromise = JSON.stringify($scope.timerPromise);
         }
       };
       
       self.stop = function() {
-        if (timerPromise) {
-          $interval.cancel(timerPromise);
-          _var.timerPromise = timerPromise = "";
+        if ($scope.timerPromise) {
+          $interval.cancel($scope.timerPromise);
+          _var.timerPromise = $scope.timerPromise = "";
           totalElapsedMs = _var.totalElapsedMs = totalElapsedMs + elapsedMs;
           elapsedMs = 0;
         }
       };
       
       self.lap = function() {
-        console.log(dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8));
-        $scope.lapAttr = dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8);
+        if ( (totalElapsedMs + elapsedMs) == 0 ) return;
+        $scope.laps.push({ time: dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8), description: '' });
+        updateStorage();
       }
       
       self.reset = function() {
          _var.startTime = new Date();
         totalElapsedMs = elapsedMs = 0;
         _var.totalElapsedMs = "";
+        $scope.laps = [];
+        updateStorage();
       };
       
       self.getElapsedMs = function() {
-        //var timeToShow = totalElapsedMs + elapsedMs;
-        //slice(-5);
-        return dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8);
+        return (totalElapsedMs + elapsedMs) % 1000 < 500 ? 
+          dateFilter(totalElapsedMs + elapsedMs, "mm ss sss").slice(0,8) : 
+          dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8);
       };
+      
+      self.removeLap = function(id) {
+        $scope.laps.splice(id, 1);
+        updateStorage();
+      }
+      
+      function updateStorage() {
+        window.localStorage['laps'] = angular.toJson( $scope.laps );
+      }
     }
   }
 })

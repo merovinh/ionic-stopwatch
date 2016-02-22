@@ -21,7 +21,7 @@
     <!-- your app's js -->
     <script src="js/app.js"></script>
   </head>
-  <body ng-app="Stopwatch" ng-controller="StopwatchCtrl">
+  <body ng-app="Stopwatch">
 
     <ion-pane>
       <ion-header-bar class="bar bar-header bar-dark">
@@ -29,16 +29,7 @@
       </ion-header-bar>
       
       <ion-content>
-        <p>{{newLap}}</p>
         <stop-watch lap-attr="newLap"></stop-watch>
-        <ion-list>
-          <ion-item ng-repeat="lap in laps" class="item item-icon-right animated">
-            <label class="item-icon-right">{{ lap.millisecond | date:'mm:ss.sss'}}</label>
-            <input type="text" placeholder="..." value="{{ lap.description }}" ng-model="lap.description">
-            <button class="button button-small button-assertive" ng-click="removeLap($index)">REMOVE</button>
-          </ion-item>
-        </ion-list>
-        
       </ion-content>
       
     </ion-pane>
@@ -47,16 +38,24 @@
 
 <script type="text/ng-template" id="StopWatch">
   <div class="card">
-    <div class="item item-text-wrap padding">
-      <span>{{swctrl.getElapsedMs()}}</span>
+    <div class="item item-text-wrap padding ant-scoreboard">
+      <span class="ant-digital">{{swctrl.getElapsedMs()}}</span>
+      <span class="ant-digital ant-bg">00:00.00</span>
     </div>
     <div class="item item-divider">
       <div class="button-bar">
-        <a class="button icon-left ion-arrow-right-b button-clear button-dark" ng-click="swctrl.start()">Play</a>
-        <a class="button icon-left ion-ios-close button-clear button-dark" ng-click="swctrl.stop()">Stop</a>
+        <a class="button icon-left ion-arrow-right-b button-clear button-dark" ng-hide="timerPromise" ng-click="swctrl.start()">Play</a>
+        <a class="button icon-left ion-ios-close button-clear button-dark" ng-show="timerPromise" ng-click="swctrl.stop()">Stop</a>
         <a class="button icon-left ion-ios-refresh-outline button-clear button-dark" ng-click="swctrl.reset()"></a>
         <a class="button icon-left ion-android-stopwatch button-clear button-dark" ng-click="swctrl.lap()"></a>
       </div>
     </div>
   </div>
+  <ion-list>
+    <ion-item ng-repeat="lap in laps" class="item item-icon-right animated">
+      <label class="item-icon-right">{{ lap.time }}</label>
+      <input type="text" placeholder="..." value="{{ lap.description }}" ng-model="lap.description">
+      <button class="button button-small button-assertive" ng-click="swctrl.removeLap($index)">REMOVE</button>
+    </ion-item>
+  </ion-list>
 </script>
