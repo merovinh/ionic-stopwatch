@@ -36,7 +36,7 @@ angular.module('Stopwatch', ['ionic'])
 
       $scope.$watch('laps', function() { updateStorage() }, true);
       
-      // start from reload
+      // Start after app was reloaded. If timerPromise isset we can continue time counting
       if ( $scope.timerPromise ) {
         $scope.timerPromise = $interval(function() {
           var now = new Date();
@@ -45,6 +45,10 @@ angular.module('Stopwatch', ['ionic'])
         _var.timerPromise = JSON.stringify($scope.timerPromise);
       }
       
+      /**
+       * start time counting
+       * and save timerPromise globally
+       */
       self.start = function() {
         if (!$scope.timerPromise) {
           _var.startTime = new Date();
@@ -56,6 +60,9 @@ angular.module('Stopwatch', ['ionic'])
         }
       };
       
+      /**
+       * Stop counting and delete timerPromise
+       */
       self.stop = function() {
         if ($scope.timerPromise) {
           $interval.cancel($scope.timerPromise);
@@ -65,12 +72,18 @@ angular.module('Stopwatch', ['ionic'])
         }
       };
       
+      /**
+       * Write current lap to laps array
+       */
       self.lap = function() {
         if ( (totalElapsedMs + elapsedMs) == 0 ) return;
         $scope.laps.push({ time: dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8), description: '' });
         updateStorage();
       }
       
+      /**
+       * Reset all data
+       */
       self.reset = function() {
          _var.startTime = new Date();
         totalElapsedMs = elapsedMs = 0;
@@ -79,17 +92,30 @@ angular.module('Stopwatch', ['ionic'])
         updateStorage();
       };
       
+      /**
+       * Return formatted elapsed ms
+       * 
+       * @return {string} elapsed milliseconds
+       */
       self.getElapsedMs = function() {
         return (totalElapsedMs + elapsedMs) % 1000 < 500 ? 
           dateFilter(totalElapsedMs + elapsedMs, "mm ss sss").slice(0,8) : 
           dateFilter(totalElapsedMs + elapsedMs, "mm:ss.sss").slice(0,8);
       };
       
+      /**
+       * Remove lap
+       * 
+       * @param {number} id Lap id
+       */
       self.removeLap = function(id) {
         $scope.laps.splice(id, 1);
         updateStorage();
       }
       
+      /**
+       * Update local storage
+       */
       function updateStorage() {
         window.localStorage['laps'] = angular.toJson( $scope.laps );
       }

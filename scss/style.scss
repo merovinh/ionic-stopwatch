@@ -1,0 +1,139 @@
+@font-face {
+  font-family: 'fontDigital';
+  src: url('../fonts/digital-7.ttf') format("truetype"), url('../fonts/digital-7.woff') format("woff");
+}
+
+
+@font-face {
+  font-family: 'fontDigitalMono';
+  src: url('../fonts/digital-7_mono.ttf') format("truetype"), url('../fonts/digital-7_mono.woff') format("woff");
+}
+
+
+body, .pane, ion-content {
+  background-color: #333;
+}
+
+.item-icon-right {
+  padding-right: 20px;
+}
+
+input[type="text"] {
+  display: inline-block;
+}
+
+.card {
+  border-radius: 9px;
+  background-color: transparent;
+  .item {
+    z-index: 0;
+    &:last-child {
+      height: 35px;
+      padding: 0;
+      border-width: 0;
+      border-bottom-right-radius: 11px;
+      border-bottom-left-radius: 11px;
+    }
+  }
+  .item-text-wrap {
+    background-color: #242424;
+    color: #fff;
+  }
+  .ant-digital {
+    font-family: 'fontDigitalMono', Fallback, sans-serif;
+    font-size: 46px;
+    color: #81d830;
+    position: absolute;
+    &.ant-bg {
+      color: #334622;
+      z-index: -1;
+    }
+  }
+  .ion-ios-close, .ion-arrow-right-b {
+    position: absolute;
+    right: 165px;
+  }
+  .ion-ios-refresh-outline {
+    position: absolute;
+    right: 56px;
+  }
+  .ion-android-stopwatch {
+    float: right;
+    height: 37px;
+    border-left: 1px solid #ABA9A9;
+    border-radius: 0;
+  }
+}
+
+.ant-scoreboard {
+  height: 70px;
+  padding: 23px 57px;
+  box-shadow: inset 0px 0px 6px 1px rgba(0, 0, 0, 0.75);
+}
+
+.list {
+  ion-item, input[type="text"] {
+    background-color: #333;
+    border-color: #333;
+    color: #fff;
+  }
+  ion-item {
+    border-color: #727272;
+    &:first-of-type {
+      border-top: none;
+    }
+    label {
+      font: 400 20px/1em fontDigitalMono;
+      position: absolute;
+      z-index: 1;
+      margin-top: 3px;
+      &:nth-of-type(2) {
+        z-index: 0;
+        color: #616161;
+      }
+    }
+    button {
+      width: 50px;
+      min-width: 50px;
+      min-height: 20px;
+      height: 26px;
+      border-radius: 0;
+      font-size: 11px;
+      padding: 0;
+      line-height: 1em;
+      background-color: #ff0000;
+      color: #fff;
+      float: right;
+    }
+    input {
+      float: right;
+      margin-right: 5px;
+      height: 24px;
+      font-size: 15px;
+      width: 145px;
+    }
+  }
+}
+
+.container-cart {
+  height: 26%;
+}
+
+.container-list {
+  height: 70%;
+}
+
+.ant-button-bar {
+  a {
+    min-height: 24px !important;
+    height: 30px;
+    padding: 2px;
+    width: 20px;
+    line-height: 27px !important;
+  }
+  > .button {
+    &:before, .icon:before {
+      line-height: 1em;
+    }
+  }
+}
